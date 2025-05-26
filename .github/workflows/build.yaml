@@ -23,7 +23,12 @@ jobs:
       - name: Extract metadata (tags, 8-char SHA)
         id: meta
         run: |
-          echo "GIT_TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "GIT_TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "GIT_TAG=" >> "$GITHUB_OUTPUT"
+          fi
+          
           echo "SHORT_SHA=$(git rev-parse --short=8 HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
