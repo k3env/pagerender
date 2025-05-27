@@ -23,8 +23,9 @@ var (
 )
 
 type RenderParams struct {
-	Url      string `json:"url"`
-	FileName string `json:"filename"`
+	Url          string `json:"url"`
+	FileName     string `json:"filename"`
+	RootSelector string `json:"root_selector"`
 }
 
 func RenderHandler() fiber.Handler {
@@ -36,6 +37,10 @@ func RenderHandler() fiber.Handler {
 
 		if err != nil {
 			return ctx.Status(http.StatusBadRequest).SendString(err.Error())
+		}
+
+		if params.RootSelector == "" {
+			params.RootSelector = "#render-container"
 		}
 
 		bytes, err := renderToBytes(params)
@@ -89,7 +94,7 @@ func renderToBytes(params RenderParams) ([]byte, error) {
 
 	time.Sleep(3 * time.Second)
 
-	container, err := page.Element("#render-container")
+	container, err := page.Element(params.RootSelector)
 	if err != nil {
 		return nil, ErrNoContainer
 	}
